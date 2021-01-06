@@ -22,3 +22,13 @@ def stringToList(str: str) -> list:
             list.append(float(tempStr))
             tempStr = ""
     return list
+
+
+# value, frquency, value, frquency... frquency is an int
+def frequencyToStandard(arr) -> list:
+    temp = []
+    for i in range(0, len(arr), 2):
+        temp += [arr[i]]*int(arr[i+1])
+
+    print(temp)
+    return temp
