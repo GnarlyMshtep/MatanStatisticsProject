@@ -1,0 +1,4 @@
+
+*.pyc
+__pycache__/dataSet.cpython-39.pyc
+*.pyc

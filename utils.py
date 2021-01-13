@@ -32,3 +32,7 @@ def frequencyToStandard(arr) -> list:
 
     print(temp)
     return temp
+
+
+def randomList(numElements, low, high) -> list:
+    raise NotImplemented

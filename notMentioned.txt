@@ -1,1 +1,6 @@
-skweness is in 2.6 not 2.4, 
+Skweness is in 2.6 not 2.4, 
+Midrange avrage of smallest and largest value,
+Range,
+Practice 2.7 Measures of Spread shoudn't we use stdev for sample since we are calculating a statistics no a parameter,
+Will you clearly specify if pop or sample on the test/quiz, 
+study guides?

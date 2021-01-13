@@ -1,6 +1,9 @@
 import bisect  # to insert in sorted list
 import utils
-from math import ceil, floor
+from math import ceil, floor, sqrt
+
+# for plotting
+import matplotlib.pyplot as plt
 
 
 """
@@ -11,6 +14,8 @@ to implement list:
 """
 from typing import Iterable
 
+# COULD MAKE ANY UNIT A SUBCLASS
+
 
 class dataSet:  # allow initialization as frequency table?
     def __init__(self, dataSet: Iterable):
@@ -20,13 +25,13 @@ class dataSet:  # allow initialization as frequency table?
             self.data = sorted(dataSet)
             self.len = len(self.data)
             # figured I'll just sort it once and have that gurrentee
+# UNIT 1:
 
-    def leafPlot(self) -> dict:  # works!
+    def stemPlot(self) -> dict:  # works!
         temp = {}
         for dataEntry in self.data:
             firstDigit = int(str(dataEntry)[0])
             if firstDigit not in temp.keys():
-                print(firstDigit)
                 # probably should be an array so dataEntry can sort
                 temp[firstDigit] = []
             for digit in str(dataEntry)[1:]:
@@ -34,7 +39,11 @@ class dataSet:  # allow initialization as frequency table?
 
         return temp
 
+
+# UNIT 2: DESCRIPTIVE STATICS
     # this is not fully functional, will give trouble when upper and lower messurments for the quartile vary (I belive)
+
+
     def getQuarrtiles(self) -> dict:
         temp = {'25th': self.getElementByPrecentile(25)['value'], 'Median': self.getElementByPrecentile(
             50)['value'], '75th': self.getElementByPrecentile(75)['value']}
@@ -69,7 +78,6 @@ class dataSet:  # allow initialization as frequency table?
     def getElementByPrecentile(self, precentile):
         fPrec = precentile/100
         ret = {}
-        print(fPrec*(self.len), isinstance(fPrec*(self.len), int))
         if (fPrec*(self.len)).is_integer():
             ret['locator'] = fPrec*(self.len)+.5
 
@@ -121,14 +129,65 @@ class dataSet:  # allow initialization as frequency table?
     def getOutliers(self) -> list:
         quartInfo = self.getQuarrtiles()
         x = 1.5*quartInfo['IQR']
-        lowerRange = quartInfo['']
 
         return [element for element in self.data if element < (quartInfo['25th']-x) or element > quartInfo['75th']+x]
 
-    def getExtremas(self):
-        return self.data[0], self.data[self.len-1]
+    def getExtremas(self):  # and range
+        return {'Min': self.data[0], 'Max': self.data[self.len-1], 'Range': self.data[self.len-1] - self.data[0]}
 
     def getBoxPlot(self) -> dict:
         quarts = self.getQuarrtiles()
         ext = self.getExtremas()
-        return {'min': ext[0], '25th': quarts['25th'], 'Median': quarts['Median'], '75th': quarts['75th'], 'max': ext[1]}
+        return {'min': min(self.data), '25th': quarts['25th'], 'Median': quarts['Median'], '75th': quarts['75th'], 'max': max(self.data)}
+
+    def getStdDeviation(self):
+        x = self.getMeanMedianMode()["Mean"]
+        temp = sqrt(sum(((element-x)**2 for element in self.data)))
+        return {'Population': round(temp/sqrt(self.len), 5),
+                'Sample': round(temp/sqrt(self.len-1), 5),
+                'SampleVariance': round((sum(((element-x)**2 for element in self.data)) / (self.len-1)), 5),
+                'PopulationVariance': round((sum(((element-x)**2 for element in self.data)) / self.len), 5)}
+
+    # how many stds from mean?: sorry for unredability I'm a golfer 😎
+    def getZScore(self, value, isSample=True) -> float:
+        return round((value-self.getMeanMedianMode()["Mean"])/self.getStdDeviation()[('Sample' if isSample else 'Population')], 5)
+
+    # add more initialization arguments like the range and stuff
+    def createHistogramPlot(self, binNumber):
+        i = 0
+        bins = []
+        while 10+5*i <= max(self.data):
+            bins.append(10+5*i)
+            i += 1
+
+        plt.hist(self.data, bins=bins, range=(10, self.getExtremas()[
+                 "Max"]),  facecolor='green', edgecolor='black', rwidth=5)
+        #bins=binNumber or self.len
+        plt.title('histogram of data')
+        plt.xlabel('pinkie lengths in cm')
+        plt.ylabel('number of pinkies messured of each category')
+        plt.grid(axis='y', alpha=0.75)
+
+        classWidth = round((max(self.data)-min(self.data)) /
+                           (binNumber or self.len), 1)
+
+        plt.xticks(
+            bins)
+
+        plt.show()
+
+    def createLinePlot(self):
+        """
+        plt.plot(self.data, [0]*31, marker='x', linewidth=0,
+                 markersize=5, markerfacecolor='blue')
+        plt.title("plot on a number line")
+        plt.show()
+        """
+        freqTable = self.getFrequencyTable()
+        sizes = [freqTable[el]*10 + 2 for el in self.data]
+        fig = plt.figure()
+        ax = fig.gca()
+        ax.scatter(self.data, [0]*self.len, s=sizes, color='red')
+        plt.show()
+
+# END OF UNIT 2 DESCRIPTIVE STATISTICS

@@ -2,15 +2,15 @@ from dataSet import dataSet
 import utils
 
 y = utils.stringToList("""
-32	2
-37	1
-42	3
-47	3
-52	8
-57	12
-62	14
-67	17
-72	13
+50                       2
+
+51                       4
+
+52                       4
+
+53                       6
+
+54                       4
 """)
 
 x = dataSet(utils.frequencyToStandard(y))
